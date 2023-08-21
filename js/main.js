@@ -4,7 +4,6 @@ const ctx = canvas.getContext('2d');
 const fishes = [];
 const fishingLine = new FishingLine();
 let score = 0;
-let isCasting = false;
 
 // Create fishes
 for (let i = 0; i < 3; i++) {
@@ -13,12 +12,12 @@ for (let i = 0; i < 3; i++) {
 
 // Event listeners
 canvas.addEventListener('click', (e) => {
-    if (!isCasting) {
+    if (!fishingLine.isCasting) {
         fishingLine.cast(e.clientX, e.clientY);
-        isCasting = true;
+        fishingLine.isCasting = true;
     } else {
         fishingLine.reelIn();
-        isCasting = false;
+        fishingLine.isCasting = false;
     }
 });
 
@@ -63,7 +62,7 @@ gameLoop();
 // Function to check for catches
 function checkCatches() {
     fishes.forEach((fish, index) => {
-        if (isCasting && collisionWithLine(fish)) {
+        if (fishingLine.isCasting && collisionWithLine(fish)) {
             updateScore(10);
             fishes.splice(index, 1);
             fishes.push(new Fish());
