@@ -1,38 +1,53 @@
-// Import your classes
-import { Fish } from './fish.js';
-import { FishingLine } from './fishingLine.js';
-
-// Get the canvas and set up the context
+// Define your canvas
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Create the fishing line
+// Create fishes and fishing line
+const fishes = Array(3).fill().map(() => new Fish());
 const fishingLine = new FishingLine();
 
-// Event listener for casting or reeling in
-canvas.addEventListener('click', (event) => {
-    fishingLine.cast(event.clientX);
+// Event listeners
+let isCasting = false;
+
+canvas.addEventListener('click', () => {
+  if (!isCasting) {
+    fishingLine.cast();
+    isCasting = true;
+  } else {
+    fishingLine.reelIn();
+    isCasting = false;
+  }
 });
 
-// Event listeners for moving the fishing line left and right
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowLeft') fishingLine.moveLine('left');
-    if (event.key === 'ArrowRight') fishingLine.moveLine('right');
+document.addEventListener('keydown', (e) => {
+  if (isCasting) {
+    if (e.key === 'ArrowLeft') {
+      fishingLine.x -= 5; // You can change this value to move it more or less
+    } else if (e.key === 'ArrowRight') {
+      fishingLine.x += 5; // You can change this value to move it more or less
+    }
+  }
 });
 
-// Main game loop
+// Game loop
 function gameLoop() {
-    // Clear the canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Update and draw the fishing line
-    fishingLine.update();
-    fishingLine.draw(ctx);
+  // Update and draw fishes
+  fishes.forEach(fish => {
+    fish.update();
+    fish.draw(ctx);
+  });
 
-    // Update and draw other game elements like the fish
+  // Update and draw the fishing line
+  fishingLine.update();
+  fishingLine.draw(ctx);
 
-    // Call the game loop again on the next animation frame
-    requestAnimationFrame(gameLoop);
+  // Check for catches
+  checkCatches();
+
+  requestAnimationFrame(gameLoop);
 }
 
 // Start the game loop
