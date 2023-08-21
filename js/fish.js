@@ -6,7 +6,7 @@ class Fish {
         this.image = new Image();
         
         // Array of fish images
-        const fishImages = ['images/fish1.png', 'images/fish2.png', 'images/fish3.png'];
+        const fishImages = ['assets/images/fish1.png', 'assets/images/fish2.png', 'assets/images/fish3.png'];
 
         // Randomly pick one of the images
         this.image.src = fishImages[Math.floor(Math.random() * fishImages.length)];
