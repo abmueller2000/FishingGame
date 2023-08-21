@@ -3,18 +3,20 @@ class FishingLine {
         this.x = 400; // Starting X
         this.y = 0; // Starting Y
         this.length = 200; // Length of the line
-        this.isCasting = false;
-        this.velocity = 2; // Downward velocity of the line
+        this.isCasting = false; // Is line casting or not
+        this.speed = 5; // Downward velocity of the line
     }
 
-    cast() {
+    cast(clientX) {
         // Logic for casting
         this.isCasting = true;
+        this.x = clientX; // Set x to the mouse click location
     }
 
     reelIn() {
         // Logic for reeling in
         this.isCasting = false;
+        this.y = 0; // Reset the y position
     }
 
     draw(ctx) {
@@ -27,14 +29,11 @@ class FishingLine {
     }
 
     update() {
-        // Move the fishing line down when casting
+        // If casting, move the line down
         if (this.isCasting) {
-            this.y += this.velocity;
-            if (this.y + this.length > 600) {
-                this.isCasting = false; // Stop when it reaches the bottom
-            }
-        } else {
-            this.y = 0; // Reset the position when not casting
+            this.y += this.speed;
+
+            // You can add conditions here if you want the line to stop at a certain point or have different behavior
         }
     }
 }
