@@ -1,54 +1,90 @@
-// Define your canvas
+// Global variables
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-
-// Create fishes and fishing line
-const fishes = Array(3).fill().map(() => new Fish());
+const fishes = [];
 const fishingLine = new FishingLine();
-
-// Event listeners
+let score = 0;
 let isCasting = false;
 
-canvas.addEventListener('click', () => {
-  if (!isCasting) {
-    fishingLine.cast();
-    isCasting = true;
-  } else {
-    fishingLine.reelIn();
-    isCasting = false;
-  }
+// Create fishes
+for (let i = 0; i < 3; i++) {
+    fishes.push(new Fish());
+}
+
+// Event listeners
+canvas.addEventListener('click', (e) => {
+    if (!isCasting) {
+        fishingLine.cast(e.clientX, e.clientY);
+        isCasting = true;
+    } else {
+        fishingLine.reelIn();
+        isCasting = false;
+    }
 });
 
 document.addEventListener('keydown', (e) => {
-  if (isCasting) {
     if (e.key === 'ArrowLeft') {
-      fishingLine.x -= 5; // You can change this value to move it more or less
+        fishingLine.x -= 5;
     } else if (e.key === 'ArrowRight') {
-      fishingLine.x += 5; // You can change this value to move it more or less
+        fishingLine.x += 5;
     }
-  }
 });
 
-// Game loop
+// Main game loop
 function gameLoop() {
-  // Clear canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Update and draw fishes
-  fishes.forEach(fish => {
-    fish.update();
-    fish.draw(ctx);
-  });
+    // Draw and update fishes
+    fishes.forEach(fish => {
+        fish.draw(ctx);
+        fish.update();
+    });
 
-  // Update and draw the fishing line
-  fishingLine.update();
-  fishingLine.draw(ctx);
+    // Draw and update fishing line
+    fishingLine.draw(ctx);
+    fishingLine.update();
 
-  // Check for catches
-  checkCatches();
+    // Check for catches
+    checkCatches();
 
-  requestAnimationFrame(gameLoop);
+    // Draw score
+    ctx.fillStyle = '#000';
+    ctx.font = '20px Arial';
+    ctx.fillText(`Score: ${score}`, 10, 30);
+
+    // Repeat
+    requestAnimationFrame(gameLoop);
 }
 
 // Start the game loop
 gameLoop();
+
+// Function to check for catches
+function checkCatches() {
+    fishes.forEach((fish, index) => {
+        if (isCasting && collisionWithLine(fish)) {
+            updateScore(10);
+            fishes.splice(index, 1);
+            fishes.push(new Fish());
+        }
+    });
+}
+
+// Function to update the score
+function updateScore(points) {
+    score += points;
+}
+
+// Function to check for collisions with fishing line
+function collisionWithLine(fish) {
+    let lineX = fishingLine.x;
+    let lineY = fishingLine.y;
+    let lineLength = fishingLine.length;
+
+    if (fish.x < lineX + 5 && fish.x + 50 > lineX &&
+        fish.y < lineY + lineLength && fish.y + 20 > lineY) {
+        return true;
+    }
+    return false;
+}
